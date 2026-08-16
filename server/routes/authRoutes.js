@@ -11,3 +11,4 @@ router.get('/github', redirectToGitHub);
 router.get('/github/callback', githubCallback);
 
 export default router;
+
