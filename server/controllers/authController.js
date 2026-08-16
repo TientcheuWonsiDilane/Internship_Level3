@@ -1,6 +1,7 @@
 import User from '../models/UserModel.js';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
+import axios from 'axios';
 
 export const register = async (req, res) => {
     const { username, email, password, github_id, avatarUrl, role } = req.body;
@@ -23,7 +24,7 @@ export const register = async (req, res) => {
             username: username,
             email: email.toLowerCase(),
             github_id: github_id || undefined,
-            role: role || 'Developer',
+            role: role || 'developer',
             avatarUrl: avatarUrl || undefined,
         };
 
@@ -115,7 +116,6 @@ export const login = async(req, res) =>{
 
 }
 
-import axios from 'axios';
 
 export const redirectToGitHub = (req, res) => {
     const clientID = process.env.GITHUB_CLIENT_ID;

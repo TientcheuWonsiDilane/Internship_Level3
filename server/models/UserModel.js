@@ -6,8 +6,9 @@ const userSchema = new mongoose.Schema({
     password: {type:String, required: false},
     github_id: {type:String, unique:true, sparse:true},
     avatarUrl:{type:String, required:false, default: null},
-    role: {type:String, enum: ['team_head', 'developer'], default: 'developer'}
 }, {timestamps: true});
+
+userSchema.index({ email: 1, role: 1 });
 
 const User = mongoose.model('User', userSchema);
 export default User;

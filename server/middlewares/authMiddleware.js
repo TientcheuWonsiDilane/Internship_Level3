@@ -1,4 +1,5 @@
 import jwt from 'jsonwebtoken';
+import Membership from '../models/MembershipModel.js';
 
 export const verifyJWT = (req, res, next) => {
     const token = req.cookies.token;
@@ -17,16 +18,30 @@ export const verifyJWT = (req, res, next) => {
     }
 };
 
-export const requireRole = (req, res, next) => {
-        if (!req.user) {
-            return res.status(500).json({ message: "Auth middleware ordering error. verifyJWT must run first." });
+export const verifyRole = (requiredRole) => {
+    return async (req, res, next) => {
+        const userId = req.user.id;
+        const { teamId } = req.params;
+
+        if (!teamId) {
+            return res.status(400).json({ message: "Bad request. Team ID parameter missing from route URL." });
         }
 
-        if (req.user.role !== "team_head") {
-            return res.status(403).json({ 
-                message: `Forbidden: This action requires the team head privilege. Your current role is [${req.user.role}].` 
-            });
-        }
+        try {
+            const membership = await Membership.findOne({ teamId, userId });
 
-        next();
+            if (!membership) {
+                return res.status(403).json({ message: "Forbidden: You are not a member of this team." });
+            }
+
+            if (requiredRole === 'team_head' && membership.role !== 'team_head') {
+                return res.status(403).json({ message: "Forbidden: This action requires [team_head] privileges." });
+            }
+
+            next();
+        } catch (error) {
+            console.error("Role Verification Error:", error);
+            return res.status(500).json({ message: "Internal server error during role verification" });
+        }
     };
+};
