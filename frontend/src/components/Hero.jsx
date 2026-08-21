@@ -1,35 +1,60 @@
-import React from "react";
 import logo from "../assets/logo.png";
-
+import workspaceImg from "../assets/workspace.png";
+import Button from "./Button";
 const Hero = () => {
   return (
-    <section
-      className="relative overflow-hidden h-[50dvh] md:h-[60dvh] lg:h-screen w-full [clip-path:polygon(0_0,_100%_0,_100%_calc(100%-40px),_95%_calc(100%-40px),_95%_100%,_90%_100%,_90%_calc(100%-20px),_85%_calc(100%-20px),_85%_calc(100%-60px),_80%_calc(100%-60px),_80%_calc(100%-20px),_75%_calc(100%-20px),_70%_calc(100%-40px),_65%_calc(100%-40px),_65%_100%,_55%_100%,_55%_calc(100%-20px),_50%_calc(100%-20px),_50%_calc(100%-50px),_45%_calc(100%-50px),_45%_calc(100%-20px),_35%_calc(100%-20px),_35%_100%,_30%_100%,_30%_calc(100%-30px),_25%_calc(100%-30px),_20%_calc(100%-60px),_15%_calc(100%-60px),_15%_calc(100%-20px),_10%_calc(100%-20px),_10%_100%,_0_100%)]">
-      <video
-        className=" h-full w-full absolute inset-0 -z-10 object-cover"
-        preload="auto"
-        muted
-        loop
-        playsInline
-        autoPlay>
-        <source src="/bgVideo.mp4" type="video/mp4" />
-      </video>
-      <div className=" absolute top-[30%] left-[7%] text-gray-300">
-        <p className=" tracking-tight  flex  items-center text-2xl md:text-5xl lg:text-7xl mb-2 ">
-          <img src={logo} className="w-18 md:w-24 lg:w-48" />{" "}
-          <span className="-ml-5 md:-ml-7 lg:-ml-13 ">Etrics WorkSpace</span>
-        </p>
-        <span className="text-lg md:text-2xl lg:text-3xl md:pl-7 pl-5  ">
-          Flowless Project Management
-        </span>
-        <p className=" pl-5 md:pl-7 text-sm md:text-[0.95rem] lg:text-lg max-w-[600px] md:max-w-[450px] mt-6">
-          Welcome to Metrics! A powerful project management and collaboration
-          platform for developers. Register your organization, create a team ,
-          and start working together today.
-        </p>
-      </div>
-      <div>
-        
+    <section className="relative overflow-hidden w-full bg-[#050506] text-white">
+      <div className="max-w-8xl mx-auto px-6 py-24 lg:py-32">
+        <div className="flex flex-col items-center text-center gap-6">
+          <img src={logo} alt="" className="w-12 md:w-24 lg:w-48 h-auto mb-2 opacity-90" />
+
+          <h1
+            className="text-3xl md:text-4xl lg:text-5xl font-extrabold leading-tight max-w-3xl mx-auto"
+            style={{ textShadow: "0 30px 120px rgba(255,255,255,0.06)" }}>
+            Metrics Workspace, Flawless Project Management
+          </h1>
+
+          <p className="text-sm md:text-base text-gray-400 max-w-2xl mx-auto">
+            Automated DCA & investing platform, spreading investments over time
+            to reduce risk and grow wealth steadily.
+          </p>
+
+          <div className="flex items-center justify-center gap-4 mt-6">
+            <Button type="white" title="Get Started" className="px-6 py-2.5" />
+            <Button type="glow" title="Get a Demo" className="px-5 py-2.5" />
+          </div>
+
+          <div className="relative w-full max-w-[1200px] mt-10">
+            <div
+              className="absolute -left-50 -top-50 w-144 h-144 rounded-full blur-xl opacity-95 pointer-events-none"
+              style={{
+                background:
+                  "radial-gradient(circle, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0.25) 40%, rgba(255,140,60,0) 70%)",
+              }}
+            />
+
+            <div
+              className="absolute -right-50 -top-50 w-144 h-144 rounded-full blur-xl opacity-90 pointer-events-none"
+              style={{
+                background:
+                  "radial-gradient(circle, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0.25) 40%, rgba(32,255,160,0) 70%)",
+              }}
+            />
+
+            <div
+              className="relative mx-auto w-full"
+              style={{ maxWidth: "1400px" }}>
+              <div className="rounded-3xl overflow-hidden bg-[#080809] border border-white/6 shadow-[0_60px_180px_rgba(255,255,255,0.06)]">
+                <img
+                  src={workspaceImg}
+                  alt="Workspace preview"
+                  className="w-full h-auto block object-cover"
+                  style={{ transform: "scale(1.02)" }}
+                />
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </section>
   );

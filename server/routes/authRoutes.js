@@ -1,6 +1,5 @@
 import {register, login, logout, githubCallback, redirectToGitHub} from '../controllers/authController.js';
 import express from 'express';
-import { verifyJWT, requireRole } from '../middlewares/authMiddleware.js';
 
 const router = express.Router();
 
