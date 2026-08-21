@@ -6,7 +6,6 @@ const InvitationSchema = new mongoose.Schema({
     inviterId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
     status: { type: String, enum: ['pending', 'accepted', 'declined'], default: 'pending' },
     role: { type: String, enum: ['team_head', 'developer'], default: 'developer' },
-    status: { type: String, enum: ['pending', 'accepted', 'declined'], default: 'pending' },
 }, { timestamps: true });
 
 InvitationSchema.index({ email: 1, teamId: 1 }, { unique: true });
