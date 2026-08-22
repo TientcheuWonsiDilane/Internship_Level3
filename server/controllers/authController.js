@@ -162,7 +162,7 @@ export const githubCallback = async (req, res) => {
 
     const githubAccessToken = tokenResponse.data.access_token;
 
-    const userResponse = await axios.get("https://github.com", {
+    const userResponse = await axios.get("https://api.github.com/user", {
       headers: { Authorization: `token ${githubAccessToken}` },
     });
 
@@ -220,5 +220,28 @@ export const logout = (req, res) => {
     return res
       .status(500)
       .json({ message: "Internal server error during logout" });
+  }
+};
+
+export const forgotPassword = async (req, res) => {
+  const { email } = req.body;
+  if (!email) {
+    return res.status(400).json({ message: "Email is required" });
+  }
+
+  try {
+    const user = await User.findOne({ email: email.toLowerCase() });
+    if (!user) {
+      return res.status(200).json({ success: true, message: "If an account with that email exists, we have sent a password reset link." });
+    }
+
+    if (!user.password && user.github_id) {
+      return res.status(400).json({ message: "This account uses GitHub for login. You cannot reset a password for it." });
+    }
+
+    return res.status(200).json({ success: true, message: "If an account with that email exists, we have sent a password reset link." });
+  } catch (error) {
+    console.error("Forgot Password Error:", error);
+    return res.status(500).json({ message: "Internal server error" });
   }
 };

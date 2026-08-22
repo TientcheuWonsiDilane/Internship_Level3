@@ -1,57 +1,63 @@
-import logo from "../assets/logo.png";
+import React from "react";
 import workspaceImg from "../assets/workspace.png";
-import Button from "./Button";
+import BrandLogo from "./BrandLogo";
+import { ArrowRight, Star } from "lucide-react";
+import { Link } from "react-router-dom";
+
 const Hero = () => {
   return (
-    <section className="relative overflow-hidden w-full bg-[#050506] text-white">
-      <div className="max-w-8xl mx-auto px-6 py-24 lg:py-32">
-        <div className="flex flex-col items-center text-center gap-6">
-          <img src={logo} alt="" className="w-12 md:w-24 lg:w-48 h-auto mb-2 opacity-90" />
+    <section className="relative overflow-hidden w-full bg-[#050506] text-white min-h-screen flex items-center pt-12 pb-16">
+      <div className="absolute top-1/2 left-0 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-white/5 rounded-full blur-[120px] pointer-events-none" />
+      <div className="absolute inset-x-0 bottom-0 h-36 bg-gradient-to-b from-transparent via-[#050506]/80 to-[#050506] pointer-events-none" />
 
-          <h1
-            className="text-3xl md:text-4xl lg:text-5xl font-extrabold leading-tight max-w-3xl mx-auto"
-            style={{ textShadow: "0 30px 120px rgba(255,255,255,0.06)" }}>
-            Metrics Workspace, Flawless Project Management
+      <div className="max-w-7xl mx-auto  w-full flex flex-col lg:flex-row items-center gap-12 relative z-10">
+        <div className=" pl-6 flex-1 flex flex-col items-start text-left z-20 w-full">
+          <h1 className="text-5xl md:text-6xl lg:text-7xl leading-[1.16] md:leading-[1.12] tracking-normal mb-4 text-white">
+            Metrics Workspace
           </h1>
 
-          <p className="text-sm md:text-base text-gray-400 max-w-2xl mx-auto">
-            Automated DCA & investing platform, spreading investments over time
-            to reduce risk and grow wealth steadily.
+          <h2 className="text-2xl md:text-3xl leading-snug text-gray-300 mb-6">
+            Flawless project management
+          </h2>
+
+          <p className="text-gray-400 text-lg md:text-xl max-w-xl mb-10 leading-relaxed">
+            Metrics is a workspace environment for developers to collaborate
+            more efficiently. Unify your team, streamline workflows, and
+            accelerate delivery from idea to production.
           </p>
 
-          <div className="flex items-center justify-center gap-4 mt-6">
-            <Button type="white" title="Get Started" className="px-6 py-2.5" />
-            <Button type="glow" title="Get a Demo" className="px-5 py-2.5" />
+          <div className="flex flex-wrap items-center gap-6 mb-16">
+            <Link
+              to="/login"
+              className="px-8 py-3.5 bg-white text-black rounded-lg font-semibold hover:bg-gray-200 transition-all text-sm md:text-base">
+              Get Started
+            </Link>
+            <Link
+              to="/about"
+              className="px-2 py-3.5 text-white font-medium hover:text-gray-300 transition-colors flex items-center gap-2 group text-sm md:text-base">
+              Learn More{" "}
+              <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+            </Link>
           </div>
+        </div>
 
-          <div className="relative w-full max-w-[1200px] mt-10">
-            <div
-              className="absolute -left-50 -top-50 w-144 h-144 rounded-full blur-xl opacity-95 pointer-events-none"
-              style={{
-                background:
-                  "radial-gradient(circle, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0.25) 40%, rgba(255,140,60,0) 70%)",
-              }}
-            />
+        <div
+          className="flex-1 w-full lg:h-[700px] relative mt-16 lg:mt-0 flex items-center justify-center z-10"
+          style={{ perspective: "1500px" }}>
+          <div
+            className="absolute w-[200%] lg:w-[290%] -left-[10%] lg:-left-[15%] top-1/2 -translate-y-1/2 transform-gpu"
+            style={{
+              transform: "rotateY(-25deg) rotateX(15deg) rotateZ(2deg)",
+            }}>
+            <div className="rounded-2xl border border-white/5 shadow-[0_50px_100px_rgba(0,0,0,1)] overflow-hidden bg-[#0a0a0c] relative">
+              <img
+                src={workspaceImg}
+                alt="Dashboard Preview"
+                className="w-full h-auto object-cover grayscale opacity-90"
+              />
 
-            <div
-              className="absolute -right-50 -top-50 w-144 h-144 rounded-full blur-xl opacity-90 pointer-events-none"
-              style={{
-                background:
-                  "radial-gradient(circle, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0.25) 40%, rgba(32,255,160,0) 70%)",
-              }}
-            />
-
-            <div
-              className="relative mx-auto w-full"
-              style={{ maxWidth: "1400px" }}>
-              <div className="rounded-3xl overflow-hidden bg-[#080809] border border-white/6 shadow-[0_60px_180px_rgba(255,255,255,0.06)]">
-                <img
-                  src={workspaceImg}
-                  alt="Workspace preview"
-                  className="w-full h-auto block object-cover"
-                  style={{ transform: "scale(1.02)" }}
-                />
-              </div>
+              <div className="absolute inset-0 bg-gradient-to-t from-[#050506]/40 via-transparent to-[#050506]/90 pointer-events-none" />
+              <div className="absolute inset-0 bg-gradient-to-b from-[#050506] via-transparent to-[#050506] pointer-events-none" />
             </div>
           </div>
         </div>

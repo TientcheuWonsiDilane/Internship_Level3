@@ -1,1 +1,118 @@
-@import 'tailwindcss';
+@import url("https://fonts.googleapis.com/css2?family=Orbitron&family=Quicksand:wght@300..700&display=swap");
+@import "tailwindcss";
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    font-family: "Quicksand", sans-serif;
+    background: #050506;
+    color: #ffffff;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6,
+  .font-heading {
+    font-family: "Orbitron", sans-serif;
+    font-weight: 400;
+    letter-spacing: 0.01em;
+  }
+
+  .font-body {
+    font-family: "Quicksand", sans-serif;
+  }
+
+  html::-webkit-scrollbar,
+  body::-webkit-scrollbar {
+    width: 0;
+    height: 0;
+  }
+
+  html.scrolling::-webkit-scrollbar,
+  body.scrolling::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  html::-webkit-scrollbar-track,
+  body::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  html::-webkit-scrollbar-thumb,
+  body::-webkit-scrollbar-thumb {
+    background: transparent;
+    border-radius: 999px;
+    border: 2px solid transparent;
+    background-clip: padding-box;
+  }
+
+  html.scrolling::-webkit-scrollbar-thumb,
+  body.scrolling::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.12);
+  }
+
+  @supports (scrollbar-color: auto) {
+    html {
+      scrollbar-width: none;
+      scrollbar-color: rgba(255, 255, 255, 0.12) transparent;
+    }
+
+    html.scrolling {
+      scrollbar-width: thin;
+    }
+
+    body {
+      scrollbar-width: none;
+      scrollbar-color: rgba(255, 255, 255, 0.12) transparent;
+    }
+
+    body.scrolling {
+      scrollbar-width: thin;
+    }
+  }
+}
+
+@layer utilities {
+  .scrollbar-auto-hide::-webkit-scrollbar {
+    width: 0;
+    height: 0;
+  }
+
+  .scrollbar-auto-hide.scrolling::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  .scrollbar-auto-hide::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .scrollbar-auto-hide::-webkit-scrollbar-thumb {
+    background: transparent;
+    border-radius: 999px;
+    border: 2px solid transparent;
+    background-clip: padding-box;
+  }
+
+  .scrollbar-auto-hide.scrolling::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.12);
+  }
+
+  @supports (scrollbar-color: auto) {
+    .scrollbar-auto-hide {
+      scrollbar-width: none;
+      scrollbar-color: rgba(255, 255, 255, 0.12) transparent;
+    }
+
+    .scrollbar-auto-hide.scrolling {
+      scrollbar-width: thin;
+    }
+  }
+}

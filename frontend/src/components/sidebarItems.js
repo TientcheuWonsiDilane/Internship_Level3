@@ -15,7 +15,7 @@ import {
   User,
   Settings,
   LogOut,
-  RefreshCw
+  RefreshCw,
 } from "lucide-react";
 
 const sections = [
@@ -24,7 +24,12 @@ const sections = [
     label: "OVERVIEW",
     items: [
       { id: "dashboard", label: "Dashboard", to: "/dashboard", icon: House },
-      { id: "taskboard", label: "Task Board", to: "/projects", icon: SquareCheckBig },
+      {
+        id: "taskboard",
+        label: "Task Board",
+        to: "/projects",
+        icon: SquareCheckBig,
+      },
     ],
   },
   {
@@ -59,7 +64,7 @@ const sections = [
         id: "githubSync",
         label: "GitHub Sync",
         to: "/githubSync",
-        icon: RefreshCw ,
+        icon: RefreshCw,
       },
     ],
   },
@@ -93,7 +98,12 @@ const sections = [
         to: "/notifications",
         icon: Bell,
       },
-      { id: "repositorysettings", label: "Repository Settings", to: "/repositorysettings", icon: SlidersVertical },
+      {
+        id: "repositorysettings",
+        label: "Repository Settings",
+        to: "/repositorysettings",
+        icon: SlidersVertical,
+      },
     ],
   },
 ];
