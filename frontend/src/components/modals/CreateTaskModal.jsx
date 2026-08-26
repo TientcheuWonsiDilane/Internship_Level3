@@ -21,7 +21,7 @@ const CreateTaskModal = ({ close }) => {
       
       await api.post("/tasks", payload);
       setStep(4);
-    } catch (e) {
+    } catch (e) { 
       setError(e.body?.message || "Failed to create task");
     } finally {
       setLoading(false);
@@ -29,13 +29,13 @@ const CreateTaskModal = ({ close }) => {
   };
 
   return (
-    <div className="text-white p-2">
+    <div className="text-white p-2 bg-black">
       <h3 className="text-2xl font-bold mb-1">Create Task</h3>
       <p className="text-sm text-gray-400 mb-6">Add a new task to your project</p>
 
       <div className="flex gap-2 mb-8">
         {[1, 2, 3].map((s) => (
-          <div key={s} className={`h-1.5 flex-1 rounded-full ${step >= s ? "bg-white" : "bg-white/10"}`} />
+          <div key={s} className={`h-1.5 flex-1 rounded-full ${step >= s ? "bg-white/5" : "bg-white/10"}`} />
         ))}
       </div>
 
@@ -45,12 +45,12 @@ const CreateTaskModal = ({ close }) => {
         {step === 1 && (
           <div className="space-y-4 animate-in fade-in slide-in-from-right-4 duration-300">
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-1.5">Task Title</label>
+              <label className="block text-sm font-medium text-gray-900 mb-1.5">Task Title</label>
               <input
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
                 placeholder="e.g. Implement authentication"
-                className="w-full px-4 py-2.5 rounded-xl bg-[#0b0b0d] border border-white/10 focus:border-white/50 focus:ring-1 focus:ring-white/50 transition-all outline-none"
+                className="w-full px-4 py-2.5 rounded-xl bg-grey-400 border border-black focus:border-white/50 focus:ring-1 focus:ring-white/50 transition-all outline-none"
                 autoFocus
               />
             </div>

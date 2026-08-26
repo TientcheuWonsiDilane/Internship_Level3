@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+ import React, { useState } from "react";
 import api from "../../lib/api";
 import { useNavigate } from "react-router-dom";
 import { ArrowRight, ArrowLeft, CheckCircle } from "lucide-react";
@@ -16,7 +16,7 @@ const CreateOrganizationModal = ({ close }) => {
     setLoading(true);
     setError("");
     try {
-      const res = await api.post("/organizations", { name, description: desc });
+      const res = await api.post("/or ganizations", { name, description: desc });
       const org = res && (res._id || res.id || res.organization?._id);
       setStep(4);
       if (org) {
@@ -54,7 +54,7 @@ const CreateOrganizationModal = ({ close }) => {
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="e.g. Acme Corp"
-                className="w-full px-4 py-2.5 rounded-xl bg-[#0b0b0d] border border-white/10 focus:border-white/50 focus:ring-1 focus:ring-white/50 transition-all outline-none"
+                className="w-full px-4 py-2.5 rounded-xl bg-grey-400 border border-black focus:border-black focus:ring-1 focus:ring-white/50 transition-all outline-none"
                 autoFocus
               />
             </div>
