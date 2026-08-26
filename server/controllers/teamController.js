@@ -2,7 +2,8 @@ import Team from "../models/TeamModel.js";
 import Membership from "../models/MembershipModel.js";
 
 export const create = async (req, res) => {
-  const { name, description, organizationId, members, ownerId } = req.body;
+  const { name, description, organizationId, members } = req.body;
+  const ownerId = req.user?.id || req.body.ownerId;
 
   if (!name || !ownerId) {
     return res
@@ -47,7 +48,7 @@ export const create = async (req, res) => {
     } catch (mErr) {
       console.error("Failed to create/ensure team membership for owner:", mErr);
     }
-    return res.status(201).json({ message: newTeam });
+    return res.status(201).json({ success: true, team: newTeam, message: newTeam });
   } catch (error) {
     console.log(error);
     return res.status(500).json({ message: "Internal Server Error" });
@@ -95,13 +96,36 @@ export const update = async (req, res) => {
 export const getTeam = async (req, res) => {
   const { id } = req.params;
   try {
-    const team = await Team.findById(id);
+    const team = await Team.findById(id).populate(
+      "members ownerId",
+      "username email avatarUrl github_id",
+    );
     if (!team) {
       return res.status(404).json({ message: "Team not found" });
     }
-    return res.status(200).json({ message: team });
+    return res.status(200).json({ success: true, team, message: team });
   } catch (error) {
     return res.status(500).json({ message: "Internal Server Error" });
+  }
+};
+
+export const getTeamMembers = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const memberships = await Membership.find({ teamId: id })
+      .populate("userId", "username email avatarUrl github_id")
+      .sort({ createdAt: 1 });
+
+    return res.status(200).json({
+      success: true,
+      members: memberships.map((m) => ({
+        membershipId: m._id,
+        role: m.role,
+        user: m.userId,
+      })),
+    });
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
   }
 };
 

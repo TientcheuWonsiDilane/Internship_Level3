@@ -9,26 +9,41 @@ import {
   deleteTask,
   updateTaskAssignee,
 } from "../controllers/taskController.js";
-import { verifyJWT, verifyRole } from "../middlewares/authMiddleware.js";
+import {
+  verifyJWT,
+  verifyProjectRole,
+  verifyTaskRole,
+} from "../middlewares/authMiddleware.js";
 
 const router = express.Router();
 
-router.post("/create", verifyJWT, verifyRole("team_head"), createTask);
+// Any member of the team that owns the project can raise a task.
+router.post("/create", verifyJWT, verifyProjectRole(), createTask);
+
 router.get("/project/:projectId", verifyJWT, getProjectTasks);
-router.post("/claim/:id", verifyJWT, claimTicket);
-router.post("/submit/:id", verifyJWT, submitForReview);
+
+// Members can claim a ticket or submit their own work for review.
+router.post("/claim/:id", verifyJWT, verifyTaskRole(), claimTicket);
+router.post("/submit/:id", verifyJWT, verifyTaskRole(), submitForReview);
+
+// Management operations stay restricted to team heads.
 router.put(
   "/update-status/:id",
   verifyJWT,
-  verifyRole("team_head"),
+  verifyTaskRole("team_head"),
   updateTaskStatus,
 );
-router.put("/update/:id", verifyJWT, verifyRole("team_head"), updateTask);
-router.delete("/delete/:id", verifyJWT, verifyRole("team_head"), deleteTask);
+router.put("/update/:id", verifyJWT, verifyTaskRole("team_head"), updateTask);
+router.delete(
+  "/delete/:id",
+  verifyJWT,
+  verifyTaskRole("team_head"),
+  deleteTask,
+);
 router.put(
   "/assignee/:id",
   verifyJWT,
-  verifyRole("team_head"),
+  verifyTaskRole("team_head"),
   updateTaskAssignee,
 );
 

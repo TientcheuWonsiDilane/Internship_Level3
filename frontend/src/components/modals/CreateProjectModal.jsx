@@ -1,8 +1,10 @@
 import React, { useState } from "react";
 import api from "../../lib/api";
 import { ArrowRight, ArrowLeft, CheckCircle } from "lucide-react";
+import { useAuth } from "../../context/AuthContext";
 
 const CreateProjectModal = ({ close }) => {
+  const { currentTeam, refreshProjects } = useAuth();
   const [step, setStep] = useState(1);
   const [name, setName] = useState("");
   const [slug, setSlug] = useState("");
@@ -14,7 +16,8 @@ const CreateProjectModal = ({ close }) => {
     setLoading(true);
     setError("");
     try {
-      await api.post("/projects", { name, slug, description: desc });
+      await api.post("/projects", { name, slug, description: desc, teamId: currentTeam });
+      await refreshProjects(currentTeam);
       setStep(4);
     } catch (e) {
       setError(e.body?.message || "Failed to create project");

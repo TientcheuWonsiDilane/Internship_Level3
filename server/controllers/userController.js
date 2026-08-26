@@ -1,4 +1,32 @@
 import User from '../models/UserModel.js';
+import Membership from '../models/MembershipModel.js';
+
+// Returns the authenticated user plus their per-team memberships.
+// Roles are stored per team on Membership documents, never on User itself,
+// so a user can be team_head in one team and developer in another.
+export const getMe = async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id).select('-password');
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    const memberships = await Membership.find({ userId: req.user.id })
+      .select('teamId role')
+      .lean();
+
+    return res.status(200).json({
+      id: user._id,
+      username: user.username,
+      email: user.email,
+      avatarUrl: user.avatarUrl,
+      github_id: user.github_id || null,
+      memberships,
+    });
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
+  }
+};
 
 export const getAllUsers = async (req, res) => {
   try {
@@ -51,4 +79,3 @@ export const deleteUser = async (req, res) => {
     return res.status(500).json({ message: error.message });
   }
 };
-

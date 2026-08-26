@@ -10,13 +10,15 @@ const Register = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
 
   const submit = async (e) => {
     e.preventDefault();
+    setError("");
     try {
       await register({ name, email, password });
     } catch (err) {
-      console.error(err);
+      setError(err.body?.message || err.message || "Registration failed");
     }
   };
 
@@ -43,6 +45,11 @@ const Register = () => {
 
         <div className="bg-[#0b0b0d] border border-white/5 p-8 rounded-2xl shadow-2xl backdrop-blur-xl">
           <form onSubmit={submit} className="space-y-5">
+            {error && (
+              <div className="p-3 bg-red-500/10 border border-red-500/20 text-red-400 text-sm rounded-lg">
+                {error}
+              </div>
+            )}
             <div>
               <label className="block text-sm font-medium text-gray-300 mb-1.5">
                 Full Name
@@ -60,7 +67,7 @@ const Register = () => {
                   placeholder="John Doe"
                 />
               </div>
-            </div>
+            </div> 
 
             <div>
               <label className="block text-sm font-medium text-gray-300 mb-1.5">

@@ -1,5 +1,7 @@
 import {
   create,
+  listMine,
+  attachTeam,
   myOrganizations,
   update,
   deleteOrg,
@@ -9,8 +11,11 @@ import { verifyJWT, verifyRole } from "../middlewares/authMiddleware.js";
 
 const router = express.Router();
 
-router.post("/create", verifyJWT, verifyRole("team_head"), create);
+router.get("/", verifyJWT, listMine);
+router.post("/", verifyJWT, create);
+router.post("/create", verifyJWT, create);
 router.get("/my-organizations/:userId", myOrganizations);
+router.post("/:id/teams", verifyJWT, attachTeam);
 router.put("/update/:id", verifyJWT, verifyRole("team_head"), update);
 router.delete("/delete/:id", verifyJWT, verifyRole("team_head"), deleteOrg);
 

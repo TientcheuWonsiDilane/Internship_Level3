@@ -1,33 +1,67 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
+import { Link } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
+import { useModal } from "../context/ModalContext";
+import CreateOrganizationModal from "../components/modals/CreateOrganizationModal";
+import PageShell from "../components/PageShell";
 import api from "../lib/api";
+import { asList } from "../lib/workspace";
 
 const Organizations = () => {
-  const [orgs, setOrgs] = useState([]);
+  const { user } = useAuth();
+  const { showModal } = useModal();
+  const [orgs, setOrgs] = React.useState([]);
 
-  useEffect(() => {
+  React.useEffect(() => {
     let mounted = true;
-    api
-      .get("/organizations")
-      .then((r) => mounted && setOrgs(r))
-      .catch(() => {});
-    return () => (mounted = false);
-  }, []);
+    const load = async () => {
+      try {
+        const res = await api.get("/organizations");
+        if (mounted) setOrgs(asList(res, "organizations", "message"));
+      } catch {
+        if (user?.id || user?._id) {
+          try {
+            const res = await api.get(`/organizations/my-organizations/${user.id || user._id}`);
+            if (mounted) setOrgs(asList(res, "organizations", "message"));
+          } catch {
+            if (mounted) setOrgs([]);
+          }
+        }
+      }
+    };
+    load();
+    return () => {
+      mounted = false;
+    };
+  }, [user]);
 
   return (
-    <div className="p-8">
-      <h2 className="text-2xl font-semibold mb-4">Organizations</h2>
+    <PageShell
+      title="Organizations"
+      subtitle="Optional grouping for teams. A team works the same with or without one."
+      actions={
+        <button
+          type="button"
+          onClick={() => showModal(CreateOrganizationModal)}
+          className="px-4 py-2 rounded-lg bg-white text-black text-sm font-semibold">
+          New organization
+        </button>
+      }>
       <div className="space-y-3">
-        {orgs.length === 0 && (
-          <div className="text-gray-600">No organizations yet.</div>
-        )}
         {orgs.map((o) => (
-          <div key={o._id} className="p-3 bg-white rounded-lg shadow-sm">
+          <Link
+            key={o._id}
+            to={`/organizations/${o._id}`}
+            className="block rounded-xl border border-white/8 bg-white/[0.03] p-4 hover:bg-white/5">
             <div className="font-medium">{o.name}</div>
-            <div className="text-sm text-gray-500">{o.description}</div>
-          </div>
+            <div className="text-sm text-white/40">{o.description}</div>
+          </Link>
         ))}
+        {orgs.length === 0 && (
+          <p className="text-sm text-white/40">No organizations yet.</p>
+        )}
       </div>
-    </div>
+    </PageShell>
   );
 };
 

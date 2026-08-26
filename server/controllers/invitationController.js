@@ -62,6 +62,24 @@ export const getMyInvitations = async (req, res) => {
     }
 };
 
+export const getTeamInvitations = async (req, res) => {
+  const { teamId } = req.params;
+  try {
+    const invitations = await Invitation.find({ teamId })
+      .populate("inviterId", "username avatarUrl")
+      .sort({ createdAt: -1 });
+    return res.status(200).json({ success: true, invitations });
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
+  }
+};
+
+export const acceptInvitationByToken = async (req, res) => {
+  req.params.id = req.params.token;
+  req.body = { ...(req.body || {}), action: "accepted" };
+  return respondToInvitation(req, res);
+};
+
 export const respondToInvitation = async (req, res) => {
     const { id } = req.params;
     const { action } = req.body; // Doit être 'accepted' ou 'declined'

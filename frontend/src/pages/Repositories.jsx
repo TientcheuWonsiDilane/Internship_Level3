@@ -1,33 +1,78 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
+import { Link } from "react-router-dom";
+import { FolderGit2 } from "lucide-react";
+import { useAuth } from "../context/AuthContext";
+import PageShell from "../components/PageShell";
 import api from "../lib/api";
+import { asItem, formatDate } from "../lib/workspace";
 
 const Repositories = () => {
-  const [repos, setRepos] = useState([]);
+  const { projects, setCurrentProject } = useAuth();
+  const [repos, setRepos] = React.useState([]);
+  const [loading, setLoading] = React.useState(true);
 
-  useEffect(() => {
+  React.useEffect(() => {
     let mounted = true;
-    api
-      .get("/repositories")
-      .then((r) => mounted && setRepos(r))
-      .catch(() => {});
-    return () => (mounted = false);
-  }, []);
+    const load = async () => {
+      setLoading(true);
+      const found = [];
+      for (const project of projects) {
+        try {
+          const res = await api.get(`/repositories/project/${project._id}`);
+          const repo = asItem(res, "repository");
+          if (repo?._id) found.push({ ...repo, project });
+        } catch {
+          // No repo connected to this project.
+        }
+      }
+      if (mounted) {
+        setRepos(found);
+        setLoading(false);
+      }
+    };
+    if (projects.length) load();
+    else {
+      setRepos([]);
+      setLoading(false);
+    }
+    return () => {
+      mounted = false;
+    };
+  }, [projects]);
 
   return (
-    <div className="p-8">
-      <h2 className="text-2xl font-semibold mb-4">Repositories</h2>
-      <div className="space-y-3">
-        {repos.length === 0 && (
-          <div className="text-gray-600">No repositories found.</div>
-        )}
-        {repos.map((r) => (
-          <div key={r._id} className="p-3 bg-white rounded-lg shadow-sm">
-            <div className="font-medium">{r.name}</div>
-            <div className="text-sm text-gray-500">{r.provider}</div>
-          </div>
-        ))}
-      </div>
-    </div>
+    <PageShell
+      title="Repositories"
+      subtitle="GitHub repositories connected to this team's projects">
+      {loading ? (
+        <div className="text-sm text-white/45">Loading…</div>
+      ) : (
+        <div className="space-y-3">
+          {repos.map((repo) => (
+            <Link
+              key={repo._id}
+              to={`/repositories/${repo._id}`}
+              onClick={() => setCurrentProject(repo.project)}
+              className="flex items-start gap-4 rounded-xl border border-white/8 bg-white/[0.03] p-4 hover:bg-white/5">
+              <div className="w-10 h-10 rounded-lg bg-white/5 flex items-center justify-center">
+                <FolderGit2 className="w-5 h-5 text-white/70" />
+              </div>
+              <div className="min-w-0">
+                <div className="font-medium truncate">{repo.fullName}</div>
+                <div className="text-sm text-white/40">
+                  {repo.project?.name} · last synced {formatDate(repo.lastSyncedAt)}
+                </div>
+              </div>
+            </Link>
+          ))}
+          {repos.length === 0 && (
+            <div className="rounded-xl border border-white/8 bg-white/[0.03] p-6 text-sm text-white/45">
+              No repositories connected yet. Team heads can link one from GitHub Sync.
+            </div>
+          )}
+        </div>
+      )}
+    </PageShell>
   );
 };
 

@@ -1,8 +1,10 @@
 import React, { useState } from "react";
 import api from "../../lib/api";
 import { ArrowRight, ArrowLeft, CheckCircle, Calendar } from "lucide-react";
+import { useAuth } from "../../context/AuthContext";
 
 const CreateTaskModal = ({ close }) => {
+  const { currentProject } = useAuth();
   const [step, setStep] = useState(1);
   const [title, setTitle] = useState("");
   const [desc, setDesc] = useState("");
@@ -16,13 +18,22 @@ const CreateTaskModal = ({ close }) => {
     setLoading(true);
     setError("");
     try {
-      const payload = { title, description: desc, status, priority };
+      if (!currentProject?._id) {
+        throw new Error("Select a project before creating a task");
+      }
+      const payload = {
+        title,
+        description: desc,
+        status,
+        priority,
+        projectId: currentProject._id,
+      };
       if (dueDate) payload.dueDate = dueDate;
-      
-      await api.post("/tasks", payload);
+      await api.post("/tasks/create", payload);
       setStep(4);
+      window.dispatchEvent(new Event("matrix:refresh-tasks"));
     } catch (e) { 
-      setError(e.body?.message || "Failed to create task");
+      setError(e.body?.message || e.message || "Failed to create task");
     } finally {
       setLoading(false);
     }

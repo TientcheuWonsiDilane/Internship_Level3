@@ -1,8 +1,10 @@
 import React, { useState } from "react";
 import api from "../../lib/api";
 import { ArrowRight, ArrowLeft, CheckCircle, Mail, Shield } from "lucide-react";
+import { useAuth } from "../../context/AuthContext";
 
 const InviteMemberModal = ({ close }) => {
+  const { currentTeam } = useAuth();
   const [step, setStep] = useState(1);
   const [email, setEmail] = useState("");
   const [role, setRole] = useState("developer");
@@ -13,10 +15,11 @@ const InviteMemberModal = ({ close }) => {
     setLoading(true);
     setError("");
     try {
-      await api.post("/invitations", { email, role });
+      if (!currentTeam) throw new Error("No team selected");
+      await api.post("/invitations/send", { email, role, teamId: currentTeam });
       setStep(4);
     } catch (e) {
-      setError(e.body?.message || "Failed to send invitation");
+      setError(e.body?.message || e.message || "Failed to send invitation");
     } finally {
       setLoading(false);
     }

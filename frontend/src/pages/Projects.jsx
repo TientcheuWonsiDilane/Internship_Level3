@@ -1,43 +1,66 @@
-import React, { useEffect, useState } from "react";
-import api from "../lib/api";
+import React from "react";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
+import { useModal } from "../context/ModalContext";
+import CreateProjectModal from "../components/modals/CreateProjectModal";
+import CreateTaskModal from "../components/modals/CreateTaskModal";
+import PageShell from "../components/PageShell";
+import TaskBoard from "../components/TaskBoard";
 
 const Projects = () => {
-  const [projects, setProjects] = useState([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    let mounted = true;
-    api
-      .get("/projects")
-      .then((res) => mounted && setProjects(res))
-      .catch(() => {})
-      .finally(() => mounted && setLoading(false));
-    return () => (mounted = false);
-  }, []);
+  const { currentProject, projects, isTeamHead, setCurrentProject } = useAuth();
+  const { showModal } = useModal();
+  const navigate = useNavigate();
 
   return (
-    <div className="p-8">
-      <h2 className="text-2xl font-semibold mb-4">Projects</h2>
-      {loading ? (
-        <div className="text-sm text-gray-500">Loading…</div>
-      ) : (
-        <div className="grid grid-cols-1 gap-4">
-          {projects.length === 0 && (
-            <div className="text-gray-600">No projects yet.</div>
+    <PageShell
+      title="Task Board"
+      subtitle={
+        currentProject
+          ? `Kanban for ${currentProject.name}`
+          : "Select a project to manage tasks"
+      }
+      actions={
+        <>
+          {isTeamHead() && (
+            <button
+              type="button"
+              onClick={() => showModal(CreateProjectModal)}
+              className="px-4 py-2 rounded-lg border border-white/15 text-sm hover:bg-white/5">
+              New project
+            </button>
           )}
+          <button
+            type="button"
+            onClick={() => showModal(CreateTaskModal)}
+            disabled={!currentProject}
+            className="px-4 py-2 rounded-lg bg-white text-black text-sm font-semibold hover:bg-gray-200 disabled:opacity-40">
+            + New Task
+          </button>
+        </>
+      }>
+      {projects.length > 1 && (
+        <div className="flex flex-wrap gap-2 mb-6">
           {projects.map((p) => (
-            <div key={p._id} className="p-4 bg-white rounded-lg shadow-sm">
-              <div className="flex items-center justify-between">
-                <div>
-                  <div className="font-medium">{p.name}</div>
-                  <div className="text-sm text-gray-500">{p.description}</div>
-                </div>
-              </div>
-            </div>
+            <button
+              key={p._id}
+              type="button"
+              onClick={() => {
+                setCurrentProject(p);
+                navigate(`/projects/${p.slug}`);
+              }}
+              className={`px-3 py-1.5 rounded-full text-xs border ${
+                currentProject?._id === p._id
+                  ? "bg-white text-black border-white"
+                  : "border-white/15 text-white/60 hover:text-white"
+              }`}>
+              {p.name}
+            </button>
           ))}
         </div>
       )}
-    </div>
+      <TaskBoard project={currentProject} />
+    </PageShell>
   );
 };
 

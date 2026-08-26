@@ -1,10 +1,11 @@
 import User from "../models/UserModel.js";
+import Membership from "../models/MembershipModel.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import axios from "axios";
 
 export const register = async (req, res) => {
-  const { username, email, password, github_id, avatarUrl, role } = req.body;
+  const { username, email, password, github_id, avatarUrl } = req.body;
 
   if (!username || !email) {
     return res
@@ -30,7 +31,6 @@ export const register = async (req, res) => {
       username: username,
       email: email.toLowerCase(),
       github_id: github_id || undefined,
-      role: role || "developer",
       avatarUrl: avatarUrl || undefined,
     };
 
@@ -40,13 +40,11 @@ export const register = async (req, res) => {
 
     const newUser = await User.create(userData);
 
-    const token = jwt.sign(
-      { id: newUser._id, role: newUser.role },
-      process.env.JWT_SECRET,
-      { expiresIn: "24h" },
-    );
+    const token = jwt.sign({ id: newUser._id }, process.env.JWT_SECRET, {
+      expiresIn: "24h",
+    });
 
-    res.cookie("token", token, {
+      res.cookie("token", token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       maxAge: 24 * 60 * 60 * 1000,
@@ -61,7 +59,9 @@ export const register = async (req, res) => {
         id: newUser._id,
         email: newUser.email,
         username: newUser.username,
-        role: newUser.role,
+        memberships: await Membership.find({ userId: newUser._id })
+          .select("teamId role")
+          .lean(),
         avatarUrl: newUser.avatarUrl,
       },
     });
@@ -100,11 +100,10 @@ export const login = async (req, res) => {
       return res.status(400).json({ message: "Invalid credentials" });
     }
 
-    const token = jwt.sign(
-      { id: user._id, role: user.role },
-      process.env.JWT_SECRET,
-      { expiresIn: "24h" },
-    );
+    const [token, memberships] = await Promise.all([
+      Promise.resolve(jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: "24h" })),
+      Membership.find({ userId: user._id }).select("teamId role").lean(),
+    ]);
 
     res.cookie("token", token, {
       httpOnly: true,
@@ -119,7 +118,7 @@ export const login = async (req, res) => {
         id: user._id,
         email: user.email,
         username: user.username,
-        role: user.role,
+        memberships,
         avatarUrl: user.avatarUrl,
       },
     });
@@ -185,11 +184,9 @@ export const githubCallback = async (req, res) => {
       { upsert: true, new: true, setDefaultsOnInsert: true },
     );
 
-    const token = jwt.sign(
-      { id: user._id, role: user.role },
-      process.env.JWT_SECRET || "votre_cle_secrete_alternative",
-      { expiresIn: "24h" },
-    );
+    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
+      expiresIn: "24h",
+    });
 
     res.cookie("token", token, {
       httpOnly: true,
@@ -197,8 +194,13 @@ export const githubCallback = async (req, res) => {
       maxAge: 24 * 60 * 60 * 1000,
     });
 
+    const memberships = await Membership.find({ userId: user._id })
+      .select("teamId")
+      .lean();
+    const dest = memberships.length ? "/dashboard" : "/onboarding";
+
     return res.redirect(
-      `${process.env.FRONTEND_URL || "http://localhost:5173"}/workspace`,
+      `${process.env.FRONTEND_URL || "http://localhost:5173"}${dest}`,
     );
   } catch (error) {
     console.error("GitHub OAuth Error:", error);

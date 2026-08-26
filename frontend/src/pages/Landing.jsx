@@ -137,7 +137,7 @@ const Landing = () => {
   <div className="relative w-full max-w-[520px] aspect-square">
     <div className="absolute inset-10 rounded-full border border-white/10" />
 
-    <div className="absolute top-1/2 left-1/2 h-14 w-14 -translate-x-1/2 -translate-y-1/2 rounded-full border border-white/15 bg-[#050506] shadow-[0_0_70px_rgba(255,255,255,0.06)]" />
+    <div className="absolute top-1/2 left-1/2 h-24 w-24 -translate-x-1/2 -translate-y-1/2 rounded-full border border-white/15 bg-[#050506] shadow-[0_0_70px_rgba(255,255,255,0.06)]" />
 
     <svg
       className="absolute inset-0 h-full w-full text-white/20"
@@ -148,7 +148,7 @@ const Landing = () => {
       <circle
         cx="50"
         cy="50"
-        r="39"
+        r="36"
         stroke="currentColor"
         strokeWidth="0.3"
         opacity="0.55"
@@ -163,11 +163,11 @@ const Landing = () => {
             key={item.title}
             className={`absolute flex flex-col items-center gap-2 pointer-events-auto -translate-x-1/2 -translate-y-1/2 ${item.className}`}
           >
-            <div className="max-w-[140px] text-center text-sm font-medium text-white/90">
+            <div className="max-w-[240px] text-center text-sm font-medium text-white/90">
               {item.title}
             </div>
-            <div className="flex h-14 w-14 items-center justify-center rounded-full border border-white/10 bg-[#050506] text-white shadow-[0_0_40px_rgba(255,255,255,0.05)]">
-              <Icon className="h-5 w-5" />
+            <div className="flex h-17 w-17 items-center justify-center rounded-full border border-white/10 bg-[#050506] text-white shadow-[0_0_40px_rgba(255,255,255,0.05)]">
+              <Icon className="h-10 w-10" />
             </div>
           </div>
         );

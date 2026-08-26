@@ -1,4 +1,4 @@
-import { StrictMode, useEffect } from "react";
+import { useEffect } from "react";
 import { BrowserRouter, Routes, Route, Outlet } from "react-router-dom";
 import Header from "./components/Header";
 import Sidebar from "./components/Sidebar";
@@ -19,6 +19,10 @@ import Invitations from "./pages/Invitations";
 import Organizations from "./pages/Organizations";
 import Organization from "./pages/Organization";
 import OrganizationOnboard from "./pages/OrganizationOnboard";
+import Onboarding from "./pages/Onboarding";
+import OnboardingOrganization from "./pages/OnboardingOrganization";
+import OnboardingCreateProject from "./pages/OnboardingCreateProject";
+import OnboardingConnectRepo from "./pages/OnboardingConnectRepo";
 import Projects from "./pages/Projects";
 import Project from "./pages/Project";
 import Repositories from "./pages/Repositories";
@@ -27,6 +31,12 @@ import Users from "./pages/Users";
 import Profile from "./pages/Profile";
 import Teams from "./pages/Teams";
 import Team from "./pages/Team";
+import { PullRequests, Branches, Commits } from "./pages/LinkedGitPages";
+import GitHubSync from "./pages/GitHubSync";
+import Roles from "./pages/Roles";
+import ActivityLog from "./pages/ActivityLog";
+import Notifications from "./pages/Notifications";
+import RepositorySettings from "./pages/RepositorySettings";
 
 function App() {
   useEffect(() => {
@@ -40,7 +50,7 @@ function App() {
       scrollTimer = window.setTimeout(() => {
         document.documentElement.classList.remove("scrolling");
         document.body.classList.remove("scrolling");
-      }, 180);
+      }, 1000);
     };
 
     window.addEventListener("scroll", setScrolling, { passive: true });
@@ -86,6 +96,38 @@ function App() {
             </Route>
 
             <Route
+              path="/onboarding"
+              element={
+                <ProtectedRoute>
+                  <Onboarding />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/onboarding/organization"
+              element={
+                <ProtectedRoute>
+                  <OnboardingOrganization />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/onboarding/create-project"
+              element={
+                <ProtectedRoute>
+                  <OnboardingCreateProject />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/onboarding/connect-repo"
+              element={
+                <ProtectedRoute>
+                  <OnboardingConnectRepo />
+                </ProtectedRoute>
+              }
+            />
+            <Route
               path="/organizations/:id/onboard"
               element={
                 <ProtectedRoute>
@@ -109,10 +151,18 @@ function App() {
               <Route path="/projects/:slug" element={<Project />} />
               <Route path="/repositories" element={<Repositories />} />
               <Route path="/repositories/:id" element={<Repository />} />
+              <Route path="/pull-requests" element={<PullRequests />} />
+              <Route path="/branches" element={<Branches />} />
+              <Route path="/commits" element={<Commits />} />
+              <Route path="/github-sync" element={<GitHubSync />} />
               <Route path="/users" element={<Users />} />
               <Route path="/profile" element={<Profile />} />
               <Route path="/teams" element={<Teams />} />
               <Route path="/teams/:id" element={<Team />} />
+              <Route path="/roles" element={<Roles />} />
+              <Route path="/activity" element={<ActivityLog />} />
+              <Route path="/notifications" element={<Notifications />} />
+              <Route path="/repository-settings" element={<RepositorySettings />} />
             </Route>
           </Routes>
           <ModalHost />
