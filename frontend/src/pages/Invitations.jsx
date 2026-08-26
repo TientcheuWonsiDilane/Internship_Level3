@@ -7,7 +7,7 @@ import api from "../lib/api";
 import { asList, formatDate, roleLabel } from "../lib/workspace";
 
 const Invitations = () => {
-  const { currentTeam, isTeamHead } = useAuth();
+  const { currentTeam, isTeamHead, refreshUser } = useAuth();
   const { showModal } = useModal();
   const [mine, setMine] = React.useState([]);
   const [sent, setSent] = React.useState([]);
@@ -34,6 +34,9 @@ const Invitations = () => {
     try {
       await api.post(`/invitations/respond/${id}`, { action });
       setMessage(`Invitation ${action}.`);
+      if (action === "accepted") {
+        await refreshUser();
+      }
       await load();
     } catch (err) {
       setMessage(err.body?.message || err.message);

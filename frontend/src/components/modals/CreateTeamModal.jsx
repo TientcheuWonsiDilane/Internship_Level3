@@ -2,8 +2,11 @@ import React, { useState } from "react";
 import api from "../../lib/api";
 import { useNavigate } from "react-router-dom";
 import { ArrowRight, ArrowLeft, CheckCircle } from "lucide-react";
+import { useAuth } from "../../context/AuthContext";
+import { asItem, idOf } from "../../lib/workspace";
 
 const CreateTeamModal = ({ close }) => {
+  const { refreshUser, setCurrentTeam } = useAuth();
   const [step, setStep] = useState(1);
   const [name, setName] = useState("");
   const [desc, setDesc] = useState("");
@@ -17,14 +20,18 @@ const CreateTeamModal = ({ close }) => {
     setError("");
     try {
       const res = await api.post("/teams", { name, description: desc });
-      setStep(4);
-      const id = res && (res._id || res.id || res.team?._id);
+      const team = asItem(res, "team");
+      const id = idOf(team) || res?._id || res?.id;
       if (id) {
-        setTimeout(() => {
-          navigate(`/teams`);
-          close();
-        }, 1500);
+        sessionStorage.setItem("matrix.currentTeamId", String(id));
+        await refreshUser();
+        setCurrentTeam(id);
       }
+      setStep(4);
+      setTimeout(() => {
+        navigate("/dashboard");
+        close();
+      }, 1200);
     } catch (e) {
       setError(e.body?.message || "Failed to create team");
     } finally {

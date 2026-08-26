@@ -2,30 +2,48 @@ import React from "react";
 import api from "../lib/api";
 import { useNavigate } from "react-router-dom";
 import { hasTeam } from "../lib/onboarding";
-import { asList, idOf } from "../lib/workspace";
+import { asItem, asList, idOf } from "../lib/workspace";
 
 const AuthContext = React.createContext(null);
 const PROJECT_KEY = "matrix.currentProjectId";
+const TEAM_KEY = "matrix.currentTeamId";
 
-const applyMembershipTeam = (user, setCurrentTeam) => {
-  if (user && user.memberships && user.memberships.length > 0) {
-    setCurrentTeam(idOf(user.memberships[0].teamId || user.memberships[0].team) || null);
-  } else {
-    setCurrentTeam(null);
-  }
+const membershipTeamIds = (user) =>
+  (user?.memberships || [])
+    .map((m) => idOf(m.teamId || m.team))
+    .filter(Boolean);
+
+const pickStoredTeam = (user) => {
+  const ids = membershipTeamIds(user);
+  if (!ids.length) return null;
+  const stored = sessionStorage.getItem(TEAM_KEY);
+  return ids.includes(stored) ? stored : ids[0];
 };
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = React.useState(null);
   const [loading, setLoading] = React.useState(true);
-  const [currentTeam, setCurrentTeam] = React.useState(null);
+  const [currentTeam, setCurrentTeamState] = React.useState(null);
+  const [teams, setTeams] = React.useState([]);
   const [projects, setProjects] = React.useState([]);
   const [currentProject, setCurrentProjectState] = React.useState(null);
   const navigate = useNavigate();
 
+  const setCurrentTeam = React.useCallback((teamId) => {
+    const next = teamId ? String(teamId) : null;
+    setCurrentTeamState(next);
+    if (next) sessionStorage.setItem(TEAM_KEY, next);
+    else sessionStorage.removeItem(TEAM_KEY);
+    sessionStorage.removeItem(PROJECT_KEY);
+    setCurrentProjectState(null);
+  }, []);
+
   const applyUser = React.useCallback((u) => {
     setUser(u || null);
-    applyMembershipTeam(u, setCurrentTeam);
+    const nextTeam = pickStoredTeam(u);
+    setCurrentTeamState(nextTeam);
+    if (nextTeam) sessionStorage.setItem(TEAM_KEY, nextTeam);
+    else sessionStorage.removeItem(TEAM_KEY);
     return u;
   }, []);
 
@@ -75,9 +93,40 @@ export const AuthProvider = ({ children }) => {
     return () => (mounted = false);
   }, [applyUser]);
 
+  const refreshTeams = React.useCallback(async (u = user) => {
+    const ids = membershipTeamIds(u);
+    if (!ids.length) {
+      setTeams([]);
+      return [];
+    }
+    const loaded = await Promise.all(
+      ids.map(async (id) => {
+        try {
+          const res = await api.get(`/teams/${id}`);
+          const team = asItem(res, "team");
+          const membership = (u?.memberships || []).find(
+            (m) => idOf(m.teamId || m.team) === id,
+          );
+          return team?._id
+            ? { ...team, role: membership?.role || "developer" }
+            : { _id: id, name: "Team", role: membership?.role };
+        } catch {
+          return { _id: id, name: "Team" };
+        }
+      }),
+    );
+    setTeams(loaded);
+    return loaded;
+  }, [user]);
+
   React.useEffect(() => {
     refreshProjects(currentTeam);
   }, [currentTeam, refreshProjects]);
+
+  React.useEffect(() => {
+    if (user) refreshTeams(user);
+    else setTeams([]);
+  }, [user, refreshTeams]);
 
   const login = async (credentials) => {
     const res = await api.post("/auth/login", credentials);
@@ -99,9 +148,12 @@ export const AuthProvider = ({ children }) => {
       await api.post("/auth/logout");
     } catch (e) {}
     setUser(null);
-    setCurrentTeam(null);
+    setCurrentTeamState(null);
+    setTeams([]);
     setProjects([]);
     setCurrentProjectState(null);
+    sessionStorage.removeItem(TEAM_KEY);
+    sessionStorage.removeItem(PROJECT_KEY);
     navigate("/login");
   };
 
@@ -123,6 +175,8 @@ export const AuthProvider = ({ children }) => {
         refreshUser,
         currentTeam,
         setCurrentTeam,
+        teams,
+        refreshTeams,
         isTeamHead,
         projects,
         currentProject,

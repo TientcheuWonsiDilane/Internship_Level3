@@ -59,8 +59,8 @@ const GitHubSync = () => {
   const sync = async () => {
     setLoading(true);
     try {
-      await api.post(`/repositories/sync/${repo._id}`);
-      setMessage("Sync timestamp updated.");
+      await api.post(`/github/repositories/${repo._id}/sync`);
+      setMessage("Repository synced from GitHub.");
       await load();
     } catch (err) {
       setError(err.body?.message || err.message);
@@ -72,7 +72,7 @@ const GitHubSync = () => {
   return (
     <PageShell
       title="GitHub Sync"
-      subtitle="Connect an existing GitHub repository to the current project. Auto-creating repos and pull requests is out of scope for this level.">
+      subtitle="Connect a GitHub repository to this project, then pull branches, pull requests, and commits into Matrix.">
       {!currentProject && (
         <p className="text-sm text-white/45">Select a project from the sidebar first.</p>
       )}

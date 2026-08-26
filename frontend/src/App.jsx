@@ -37,6 +37,9 @@ import Roles from "./pages/Roles";
 import ActivityLog from "./pages/ActivityLog";
 import Notifications from "./pages/Notifications";
 import RepositorySettings from "./pages/RepositorySettings";
+import MyTasks from "./pages/MyTasks";
+import TaskDetail from "./pages/TaskDetail";
+import NotFound from "./pages/NotFound";
 
 function App() {
   useEffect(() => {
@@ -149,6 +152,8 @@ function App() {
               <Route path="/organizations/:id" element={<Organization />} />
               <Route path="/projects" element={<Projects />} />
               <Route path="/projects/:slug" element={<Project />} />
+              <Route path="/projects/:slug/tasks/:taskId" element={<TaskDetail />} />
+              <Route path="/tasks/mine" element={<MyTasks />} />
               <Route path="/repositories" element={<Repositories />} />
               <Route path="/repositories/:id" element={<Repository />} />
               <Route path="/pull-requests" element={<PullRequests />} />
@@ -163,6 +168,8 @@ function App() {
               <Route path="/activity" element={<ActivityLog />} />
               <Route path="/notifications" element={<Notifications />} />
               <Route path="/repository-settings" element={<RepositorySettings />} />
+              <Route path="/workspace/notifications" element={<Notifications />} />
+              <Route path="*" element={<NotFound />} />
             </Route>
           </Routes>
           <ModalHost />

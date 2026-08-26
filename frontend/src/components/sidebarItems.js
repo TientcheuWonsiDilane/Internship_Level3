@@ -1,6 +1,7 @@
 import {
   House,
   SquareCheckBig,
+  ListTodo,
   Folder,
   GitPullRequest,
   GitBranch,
@@ -21,6 +22,7 @@ const sections = [
     items: [
       { id: "dashboard", label: "Dashboard", to: "/dashboard", icon: House },
       { id: "taskboard", label: "Task Board", to: "/projects", icon: SquareCheckBig },
+      { id: "mytasks", label: "My Tasks", to: "/tasks/mine", icon: ListTodo },
     ],
   },
   {

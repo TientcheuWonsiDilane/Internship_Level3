@@ -1,5 +1,6 @@
 import React from "react";
 import { GitBranch, UserPlus } from "lucide-react";
+import { Link } from "react-router-dom";
 import api from "../lib/api";
 import { useAuth } from "../context/AuthContext";
 import { asList, formatDate, idOf } from "../lib/workspace";
@@ -97,7 +98,11 @@ const TaskBoard = ({ project }) => {
                         className="rounded-lg border border-white/8 bg-[#0c0d12] p-3 space-y-2">
                         <div className="flex items-start justify-between gap-2">
                           <h4 className="text-sm font-medium text-white leading-snug">
-                            {task.title}
+                            <Link
+                              to={`/projects/${project.slug || project._id}/tasks/${task._id}`}
+                              className="hover:underline">
+                              {task.title}
+                            </Link>
                           </h4>
                           <span
                             className={`text-[10px] uppercase tracking-wide px-1.5 py-0.5 rounded ${

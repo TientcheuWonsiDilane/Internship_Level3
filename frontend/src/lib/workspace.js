@@ -48,3 +48,46 @@ export const formatDate = (value) => {
     year: "numeric",
   });
 };
+
+export const formatDateTime = (value) => {
+  if (!value) return "—";
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "—";
+  return date.toLocaleString(undefined, {
+    month: "short",
+    day: "numeric",
+    hour: "numeric",
+    minute: "2-digit",
+  });
+};
+
+export const statusLabel = (status) =>
+  String(status || "")
+    .replace(/_/g, " ")
+    .replace(/\b\w/g, (c) => c.toUpperCase()) || "—";
+
+export const notificationCopy = (item) => {
+  const p = item?.payload || {};
+  switch (item?.type) {
+    case "task_assigned":
+      return p.taskTitle ? `You were assigned “${p.taskTitle}”.` : "A task was assigned to you.";
+    case "mentioned":
+      return p.taskTitle
+        ? `You were mentioned on “${p.taskTitle}”.`
+        : "You were mentioned in a comment.";
+    case "pr_merged":
+      return p.title ? `Pull request merged: ${p.title}` : "A linked pull request was merged.";
+    case "comment_reply":
+      return p.taskTitle ? `New comment on “${p.taskTitle}”.` : "Someone replied to a comment.";
+    case "invitation_accepted":
+      return p.teamName
+        ? `${p.username || "Someone"} accepted an invite to ${p.teamName}.`
+        : "An invitation was accepted.";
+    case "task_review_submitted":
+      return p.taskTitle
+        ? `“${p.taskTitle}” was submitted for review.`
+        : "A task was submitted for review.";
+    default:
+      return p.excerpt || p.message || item?.type || "Notification";
+  }
+};

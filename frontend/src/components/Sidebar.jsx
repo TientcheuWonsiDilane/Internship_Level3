@@ -6,14 +6,23 @@ import { ChevronDown } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import { useModal } from "../context/ModalContext";
 import CreateTaskModal from "./modals/CreateTaskModal";
+import CreateTeamModal from "./modals/CreateTeamModal";
 import BrandLogo from "./BrandLogo";
 import SidebarProfile from "./SidebarProfile";
+import api from "../lib/api";
 
 const Sidebar = ({ onSelect }) => {
   const location = useLocation();
   const navigate = useNavigate();
-  const { isTeamHead, projects, currentProject, setCurrentProject } =
-    useAuth();
+  const {
+    isTeamHead,
+    projects,
+    currentProject,
+    setCurrentProject,
+    teams,
+    currentTeam,
+    setCurrentTeam,
+  } = useAuth();
   const { showModal } = useModal();
 
   const derivedActive = React.useMemo(() => {
@@ -33,7 +42,23 @@ const Sidebar = ({ onSelect }) => {
 
   const [isScrolling, setIsScrolling] = React.useState(false);
   const [projOpen, setProjOpen] = React.useState(false);
+  const [teamOpen, setTeamOpen] = React.useState(false);
   const scrollTimerRef = React.useRef(null);
+
+  const [unreadCount, setUnreadCount] = React.useState(0);
+
+  React.useEffect(() => {
+    let mounted = true;
+    api
+      .get("/notifications")
+      .then((res) => {
+        if (mounted) setUnreadCount(res.unreadCount || 0);
+      })
+      .catch(() => {});
+    return () => {
+      mounted = false;
+    };
+  }, [location.pathname]);
 
   React.useEffect(() => {
     return () => {
@@ -65,7 +90,64 @@ const Sidebar = ({ onSelect }) => {
           <div className="flex items-center justify-between">
             <button
               type="button"
-              onClick={() => setProjOpen((p) => !p)}
+              onClick={() => {
+                setTeamOpen((p) => !p);
+                setProjOpen(false);
+              }}
+              aria-expanded={teamOpen}
+              className="flex items-center gap-2 text-xs text-white hover:text-white transition-colors min-w-0">
+              <span className="truncate">
+                {currentTeamRecord?.name || "Select a team"}
+              </span>
+              <ChevronDown
+                className={`w-4 h-4 shrink-0 transition-transform ${teamOpen ? "rotate-180" : ""}`}
+              />
+            </button>
+          </div>
+          {teamOpen && (
+            <div className="mt-2 bg-black rounded-md p-2 border border-white/6 max-h-48 overflow-y-auto">
+              {teams.length === 0 && (
+                <div className="text-sm text-gray-400">You are not on a team yet.</div>
+              )}
+              {teams.map((team) => (
+                <button
+                  key={team._id}
+                  type="button"
+                  onClick={() => {
+                    setCurrentTeam(team._id);
+                    setTeamOpen(false);
+                    navigate("/dashboard");
+                  }}
+                  className={`w-full text-left px-2 py-2 rounded-md hover:bg-white/5 text-sm ${
+                    String(currentTeam) === String(team._id)
+                      ? "bg-white/8 text-white"
+                      : "text-white/70"
+                  }`}>
+                  <div className="truncate">{team.name}</div>
+                  <div className="text-[10px] uppercase tracking-wide text-white/35">
+                    {team.role === "team_head" ? "Team Head" : "Developer"}
+                  </div>
+                </button>
+              ))}
+              <button
+                type="button"
+                onClick={() => {
+                  setTeamOpen(false);
+                  if (showModal) showModal(CreateTeamModal);
+                }}
+                className="w-full text-left px-2 py-2 rounded-md hover:bg-white/5 text-sm text-white/80 mt-1 border-t border-white/8">
+                + Create team
+              </button>
+            </div>
+          )}
+
+          <div className="flex items-center justify-between mt-3">
+            <button
+              type="button"
+              onClick={() => {
+                setProjOpen((p) => !p);
+                setTeamOpen(false);
+              }}
               aria-expanded={projOpen}
               className="flex items-center gap-2 text-xs text-white/70 hover:text-white transition-colors min-w-0">
               <span className="truncate">
@@ -153,6 +235,7 @@ const Sidebar = ({ onSelect }) => {
                         label={item.label}
                         to={item.to}
                         icon={item.icon}
+                        badge={item.id === "notifications" && unreadCount ? unreadCount : undefined}
                         active={derivedActive === item.id}
                         onClick={(id) => onSelect && onSelect(id)}
                       />
