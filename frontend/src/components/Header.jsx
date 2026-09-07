@@ -18,11 +18,14 @@ const Header = () => {
 
   return (
     <header className="absolute top-2 z-50 w-full px-6 md:px-12 py-5 md:py-5 flex justify-between md:justify-evenly items-center bg-transparent">
-      <BrandLogo
-        to="/"
-        className="z-50 relative"
-        imageClassName="h-8 sm:h-9 md:h-10 lg:h-11"
-      />
+      <div className="inline-flex items-center z-50 relative">
+        <BrandLogo
+          to="/"
+          className="relative"
+          imageClassName="h-8 sm:h-9 md:h-10 lg:h-11"
+        />
+        <span className="ml-2 font-heading text-lg text-white/90 select-none">etrics</span>
+      </div>
 
       <nav className="hidden md:block navlinks">
         <ul className="flex justify-center items-center gap-6 lg:gap-9 text-[1rem] lg:text-[1.1rem] font-medium text-gray-300">

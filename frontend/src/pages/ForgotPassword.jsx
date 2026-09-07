@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { Mail, ArrowLeft, Send } from "lucide-react";
 import api from "../lib/api";
 import BrandLogo from "../components/BrandLogo";
+import Footer from "../components/Footer";
 
 const ForgotPassword = () => {
   const [email, setEmail] = useState("");
@@ -101,8 +102,10 @@ const ForgotPassword = () => {
           </Link>
         </p>
       </div>
+      <Footer />
     </div>
   );
 };
 
 export default ForgotPassword;
+

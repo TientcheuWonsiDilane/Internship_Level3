@@ -1,9 +1,11 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { Users, Zap, Shield, ArrowRight } from "lucide-react";
+import Footer from "../components/Footer";
 
 const PublicTeams = () => {
   return (
+    <>
     <div className="min-h-screen bg-[#050506] text-white flex flex-col pt-32 pb-16">
       <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-white/5 rounded-full blur-[120px] pointer-events-none" />
 
@@ -61,7 +63,10 @@ const PublicTeams = () => {
         </div>
       </main>
     </div>
+    <Footer />
+    </>
   );
 };
 
 export default PublicTeams;
+

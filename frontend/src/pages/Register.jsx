@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import { Mail, Lock, User, ArrowRight } from "lucide-react";
 import { FaGithub } from "react-icons/fa";
 import BrandLogo from "../components/BrandLogo";
+import Footer from "../components/Footer";
 
 const Register = () => {
   const { register } = useAuth();
@@ -148,8 +149,10 @@ const Register = () => {
           </Link>
         </p>
       </div>
+      <Footer />
     </div>
   );
 };
 
 export default Register;
+

@@ -4,6 +4,7 @@ import {
   getProjectRepository,
   syncRepository,
   disconnectRepository,
+  connectRepositoryViaOauth,
 } from "../controllers/repositoryController.js";
 import {
   verifyJWT,
@@ -18,6 +19,12 @@ router.post(
   verifyJWT,
   verifyProjectRole("team_head"),
   connectRepository,
+);
+router.post(
+  "/connect/oauth",
+  verifyJWT,
+  verifyProjectRole("team_head"),
+  connectRepositoryViaOauth,
 );
 router.get("/project/:projectId", verifyJWT, getProjectRepository);
 router.post(

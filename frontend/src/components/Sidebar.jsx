@@ -84,6 +84,7 @@ const Sidebar = ({ onSelect }) => {
             to="/dashboard"
             imageClassName="h-8 sm:h-9 md:h-10 w-auto opacity-90"
           />
+          <span className="ml-2 font-heading text-xl text-white/95 select-none">etrics</span>
         </div>
 
         <div className="mt-4 px-2">
@@ -97,7 +98,7 @@ const Sidebar = ({ onSelect }) => {
               aria-expanded={teamOpen}
               className="flex items-center gap-2 text-xs text-white hover:text-white transition-colors min-w-0">
               <span className="truncate">
-                {currentTeamRecord?.name || "Select a team"}
+                {currentTeam?.name || teams[0]?.name || "Select a team"}
               </span>
               <ChevronDown
                 className={`w-4 h-4 shrink-0 transition-transform ${teamOpen ? "rotate-180" : ""}`}

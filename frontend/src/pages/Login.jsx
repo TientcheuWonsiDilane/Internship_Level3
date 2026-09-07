@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import { Mail, Lock, ArrowRight } from "lucide-react";
 import { FaGithub } from "react-icons/fa";
 import BrandLogo from "../components/BrandLogo";
+import Footer from "../components/Footer";
 
 const Login = () => {
   const { login } = useAuth();
@@ -128,8 +129,10 @@ const Login = () => {
           </Link>
         </p>
       </div>
+      <Footer />
     </div>
   );
 };
 
 export default Login;
+

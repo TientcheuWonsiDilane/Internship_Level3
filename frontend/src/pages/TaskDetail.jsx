@@ -3,12 +3,15 @@ import { useParams, Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import PageShell from "../components/PageShell";
 import UserAvatar from "../components/UserAvatar";
+import { useModal } from "../context/ModalContext";
+import AssignTaskModal from "../components/modals/AssignTaskModal";
 import api from "../lib/api";
 import { asItem, asList, formatDate, formatDateTime, statusLabel } from "../lib/workspace";
 
 const TaskDetail = () => {
   const { slug, taskId } = useParams();
-  const { projects, currentProject, setCurrentProject } = useAuth();
+  const { projects, currentProject, setCurrentProject, isTeamHead } = useAuth();
+  const { showModal } = useModal();
   const [task, setTask] = React.useState(null);
   const [comments, setComments] = React.useState([]);
   const [body, setBody] = React.useState("");
@@ -146,6 +149,15 @@ const TaskDetail = () => {
                 label="Assignee"
                 value={task?.assignedTo?.username || "Unassigned"}
               />
+                {isTeamHead() && (
+                  <div className="mt-3">
+                    <button
+                      onClick={() => showModal(AssignTaskModal, { taskId: task._id })}
+                      className="w-full px-3 py-2 rounded-lg bg-white text-black text-sm font-semibold">
+                      Assign task
+                    </button>
+                  </div>
+                )}
               <Row label="Branch" value={task?.linkedBranch || "—"} />
               <Row label="Pull request" value={task?.linkedPullRequest || "—"} />
             </div>

@@ -1,5 +1,6 @@
 import React from "react";
 import { Mail, MapPin, Phone } from "lucide-react";
+import Footer from "../components/Footer";
 
 const Contact = () => {
   return (
@@ -80,8 +81,10 @@ const Contact = () => {
         </div>
 
       </main>
+      <Footer />
     </div>
   );
 };
 
 export default Contact;
+

@@ -10,7 +10,7 @@ export const listNotifications = async (req, res) => {
       Notification.countDocuments({ userId, isRead: false }),
     ]);
 
-    return res.status(200).json({ success: true, notifications, unreadCount });
+      return res.status(200).json({ success: true, notifications, unreadCount });
   } catch (error) {
     console.error("List Notifications Error:", error);
     return res

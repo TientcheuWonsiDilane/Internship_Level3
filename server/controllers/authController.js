@@ -132,7 +132,9 @@ export const login = async (req, res) => {
 
 export const redirectToGitHub = (req, res) => {
   const clientID = process.env.GITHUB_CLIENT_ID;
-  const githubAuthUrl = `https://github.com/login/oauth/authorize?client_id=${clientID}&scope=user:email`;
+  // Request repo scope so the returned token can be used to validate/connect repositories
+  const scopes = encodeURIComponent("user:email repo");
+  const githubAuthUrl = `https://github.com/login/oauth/authorize?client_id=${clientID}&scope=${scopes}`;
 
   return res.redirect(githubAuthUrl);
 };
@@ -180,6 +182,7 @@ export const githubCallback = async (req, res) => {
         username: username,
         avatarUrl: avatar_url,
         email: finalEmail.toLowerCase(),
+        github_token: githubAccessToken,
       },
       { upsert: true, new: true, setDefaultsOnInsert: true },
     );

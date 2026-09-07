@@ -119,3 +119,29 @@ export const deleteProject = async (req, res) => {
         return res.status(500).json({ message: "Internal server error during project deletion" });
     }
 };
+
+export const getProjectMembers = async (req, res) => {
+    const { id } = req.params;
+    try {
+        const project = await Project.findById(id).select('teamId').lean();
+        if (!project) return res.status(404).json({ message: 'Project not found' });
+
+        // Membership model lives in server/models/MembershipModel.js
+        const Membership = await import('../models/MembershipModel.js');
+        const memberships = await Membership.default.find({ teamId: project.teamId })
+            .populate('userId', 'username email avatarUrl github_id')
+            .sort({ createdAt: 1 });
+
+        return res.status(200).json({
+            success: true,
+            members: memberships.map((m) => ({
+                membershipId: m._id,
+                role: m.role,
+                user: m.userId,
+            })),
+        });
+    } catch (error) {
+        console.error('Get Project Members Error:', error);
+        return res.status(500).json({ message: 'Internal server error' });
+    }
+};

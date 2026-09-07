@@ -1,12 +1,30 @@
 import Repository from '../models/RepositoryModel.js';
 import Project from '../models/ProjectModel.js';
+import User from '../models/UserModel.js';
+import * as githubService from '../services/githubService.js';
 
 export const connectRepository = async (req, res) => {
-    const { fullName, description, repoId, projectId } = req.body;
+    const { fullName, description, repoId, projectId, repoUrl } = req.body;
     const userId = req.user.id;
 
-    if (!fullName || !repoId || !projectId) {
-        return res.status(400).json({ message: "Full name, Repository ID, and Project ID are required" });
+    // Allow connecting by URL or by owner/repo + numeric ID
+    if (!projectId) {
+        return res.status(400).json({ message: "Project ID is required" });
+    }
+
+    // Try to derive fullName from repoUrl if not provided
+    let derivedFullName = fullName;
+    if (!derivedFullName && repoUrl) {
+        try {
+            const m = String(repoUrl).match(/github\.com\/(.+?)(?:\.git)?$/i);
+            if (m && m[1]) derivedFullName = m[1].replace(/\/$/, "");
+        } catch (e) {
+            // ignore
+        }
+    }
+
+    if (!derivedFullName || !repoId) {
+        return res.status(400).json({ message: "Repository fullName (owner/repo) and repoId are required" });
     }
 
     try {
@@ -21,7 +39,7 @@ export const connectRepository = async (req, res) => {
         }
 
         const newRepo = await Repository.create({
-            fullName,
+            fullName: derivedFullName,
             description: description || "",
             repoId,
             projectId,
@@ -96,5 +114,66 @@ export const disconnectRepository = async (req, res) => {
     } catch (error) {
         console.error("Disconnect Repository Error:", error);
         return res.status(500).json({ message: "Internal server error during repository disconnection" });
+    }
+};
+
+/**
+ * Connect a repository using the authenticated user's GitHub OAuth token.
+ * Expects { fullName, repoUrl, projectId, description } in body.
+ */
+export const connectRepositoryViaOauth = async (req, res) => {
+    const { fullName, repoUrl, projectId, description } = req.body;
+    const userId = req.user.id;
+
+    if (!projectId) {
+        return res.status(400).json({ message: "Project ID is required" });
+    }
+
+    // derive fullName if needed
+    let derivedFullName = fullName;
+    if (!derivedFullName && repoUrl) {
+        const m = String(repoUrl).match(/github\.com\/(.+?)(?:\.git)?$/i);
+        if (m && m[1]) derivedFullName = m[1].replace(/\/$/, "");
+    }
+
+    if (!derivedFullName) {
+        return res.status(400).json({ message: "Repository fullName (owner/repo) is required" });
+    }
+
+    try {
+        const user = await User.findById(userId).select('+github_token');
+        if (!user || !user.github_token) {
+            return res.status(400).json({ message: "GitHub OAuth token not available for this user. Re-authenticate via GitHub to grant repository access." });
+        }
+
+        // validate/retrieve meta using user's token
+        let meta;
+        try {
+            meta = await githubService.fetchRepositoryMeta(derivedFullName, user.github_token);
+        } catch (error) {
+            console.error('GitHub meta fetch failed:', error);
+            return res.status(502).json({ message: 'Failed to fetch repository metadata from GitHub with your token' });
+        }
+
+        const repoExists = await Repository.findOne({ repoId: meta.repoId });
+        if (repoExists) {
+            return res.status(400).json({ message: 'This repository is already connected to a project' });
+        }
+
+        const newRepo = await Repository.create({
+            fullName: meta.fullName,
+            description: meta.description || description || '',
+            repoId: meta.repoId,
+            projectId,
+            connectedBy: userId,
+            lastSyncedAt: new Date(),
+        });
+
+        await Project.findByIdAndUpdate(projectId, { linkedRepository: newRepo._id });
+
+        return res.status(201).json({ success: true, repository: newRepo });
+    } catch (error) {
+        console.error('Connect via OAuth Error:', error);
+        return res.status(500).json({ message: 'Internal server error during repository connection' });
     }
 };
