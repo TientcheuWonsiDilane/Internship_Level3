@@ -55,19 +55,23 @@ const AssignTaskModal = ({ taskId, close }) => {
           <div className="flex-1 text-sm">Unassigned</div>
         </button>
 
-        {members.map((m) => (
-          <button
-            type="button"
-            key={m._id}
-            onClick={() => setAssignee(m._id)}
-            className={`w-full text-left p-2 rounded-lg flex items-center gap-3 ${assignee === m._id ? "bg-white/5" : "hover:bg-white/3"}`}>
-            <UserAvatar name={m.name || m.username} src={m.avatar} size="md" />
-            <div className="flex-1">
-              <div className="text-sm font-medium">{m.name || m.username}</div>
-              {m.title && <div className="text-xs text-gray-400">{m.title}</div>}
-            </div>
-          </button>
-        ))}
+        {members.map((m) => {
+          const user = m.user || m; // controller returns { membershipId, role, user }
+          const userId = user._id || user.id;
+          return (
+            <button
+              type="button"
+              key={userId}
+              onClick={() => setAssignee(userId)}
+              className={`w-full text-left p-2 rounded-lg flex items-center gap-3 ${assignee === userId ? "bg-white/5" : "hover:bg-white/3"}`}>
+              <UserAvatar name={user.name || user.username} src={user.avatarUrl || user.avatar} size="md" />
+              <div className="flex-1">
+                <div className="text-sm font-medium">{user.name || user.username}</div>
+                {m.role && <div className="text-xs text-gray-400">{m.role}</div>}
+              </div>
+            </button>
+          );
+        })}
       </div>
 
       <div className="flex justify-end gap-2 pt-3">
