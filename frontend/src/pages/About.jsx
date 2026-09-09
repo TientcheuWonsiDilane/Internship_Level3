@@ -1,7 +1,9 @@
 import React from "react";
+import Footer from "../components/Footer.jsx"
 
 const About = () => {
   return (
+    <main>
     <div className="min-h-screen bg-[#050506] text-white flex flex-col pt-32 pb-16">
       <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-white/5 rounded-full blur-[100px] pointer-events-none" />
       <div className="absolute bottom-0 left-0 w-[800px] h-[800px] bg-white/5 rounded-full blur-[120px] pointer-events-none" />
@@ -33,6 +35,8 @@ const About = () => {
         </div>
       </main>
     </div>
+    <Footer />
+    </main>
   );
 };
 

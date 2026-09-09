@@ -4,7 +4,7 @@ import Footer from "../components/Footer";
 
 const Contact = () => {
   return (
-    <div className="min-h-screen bg-[#050506] text-white flex flex-col pt-32 pb-16">
+    <div className="min-h-screen bg-[#050506] text-white flex flex-col pt-32 pb-16 mb-12">
       <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[900px] h-[900px] bg-white/5 rounded-full blur-[140px] pointer-events-none" />
 
       <main className="flex-grow flex flex-col md:flex-row gap-12 px-6 md:px-12 relative z-10 max-w-6xl mx-auto w-full">
