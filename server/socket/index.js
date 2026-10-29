@@ -35,11 +35,12 @@ function parseCookies(header) {
  */
 function authenticateSocket(socket, next) {
   const cookies = parseCookies(socket.handshake.headers?.cookie);
-  const token =
-    socket.handshake.auth?.token || cookies.token || null;
+  const token = socket.handshake.auth?.token || cookies.token || null;
 
   if (!token) {
-    return next(new Error("Authentication required: no session token provided"));
+    return next(
+      new Error("Authentication required: no session token provided"),
+    );
   }
 
   try {
@@ -73,19 +74,29 @@ async function handleProjectJoin(socket, payload, callback) {
     }).lean();
     if (!membership) {
       typeof callback === "function" &&
-        callback({ ok: false, error: "Forbidden: you are not a member of this team" });
+        callback({
+          ok: false,
+          error: "Forbidden: you are not a member of this team",
+        });
       return;
     }
 
     const room = `project:${projectId}`;
     socket.join(room);
-    presence.join(room, socket.id, { userId: socket.data.userId, ...socket.data.userSummary });
-    io.to(room).emit("presence:update", { projectId, users: presence.list(room) });
+    presence.join(room, socket.id, {
+      userId: socket.data.userId,
+      ...socket.data.userSummary,
+    });
+    io.to(room).emit("presence:update", {
+      projectId,
+      users: presence.list(room),
+    });
 
     typeof callback === "function" && callback({ ok: true });
   } catch (error) {
     console.error("project:join error:", error);
-    typeof callback === "function" && callback({ ok: false, error: "Internal server error" });
+    typeof callback === "function" &&
+      callback({ ok: false, error: "Internal server error" });
   }
 }
 
@@ -100,7 +111,10 @@ function handleProjectLeave(socket, payload, callback) {
   const room = `project:${projectId}`;
   socket.leave(room);
   presence.leave(room, socket.id);
-  io.to(room).emit("presence:update", { projectId, users: presence.list(room) });
+  io.to(room).emit("presence:update", {
+    projectId,
+    users: presence.list(room),
+  });
 
   typeof callback === "function" && callback({ ok: true });
 }
@@ -111,7 +125,7 @@ export function initSocket(httpServer) {
       origin:
         process.env.SOCKET_CORS_ORIGIN ||
         process.env.FRONTEND_URL ||
-        "http://localhost:5173",
+        "https://metrics-xs4x.onrender.com",
       credentials: true,
     },
   });
@@ -146,14 +160,21 @@ export function initSocket(httpServer) {
       console.error("Socket connection bootstrap error:", error);
     }
 
-    socket.on("project:join", (payload, cb) => handleProjectJoin(socket, payload, cb));
-    socket.on("project:leave", (payload, cb) => handleProjectLeave(socket, payload, cb));
+    socket.on("project:join", (payload, cb) =>
+      handleProjectJoin(socket, payload, cb),
+    );
+    socket.on("project:leave", (payload, cb) =>
+      handleProjectLeave(socket, payload, cb),
+    );
 
     socket.on("disconnecting", () => {
       const affectedRooms = presence.leaveAllForSocket(socket.id);
       for (const roomId of affectedRooms) {
         const projectId = roomId.replace(/^project:/, "");
-        io.to(roomId).emit("presence:update", { projectId, users: presence.list(roomId) });
+        io.to(roomId).emit("presence:update", {
+          projectId,
+          users: presence.list(roomId),
+        });
       }
     });
   });

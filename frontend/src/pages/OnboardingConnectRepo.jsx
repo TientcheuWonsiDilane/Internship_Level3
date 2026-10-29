@@ -46,11 +46,13 @@ const OnboardingConnectRepo = () => {
             <GitBranch className="h-6 w-6" />
           </div>
           <div>
-            <h2 className="font-semibold text-lg">Authorize GitHub when you are ready</h2>
+            <h2 className="font-semibold text-lg">
+              Authorize GitHub when you are ready
+            </h2>
             <p className="text-sm text-gray-400 mt-1">
-              Install access for your organization or personal account, then pick a
-              repository to attach{projectId ? " to this project" : ""}. You can do
-              this from the project page at any time.
+              Install access for your organization or personal account, then
+              pick a repository to attach{projectId ? " to this project" : ""}.
+              You can do this from the project page at any time.
             </p>
           </div>
         </div>
@@ -64,7 +66,10 @@ const OnboardingConnectRepo = () => {
         <button
           type="button"
           onClick={() => {
-            window.location.href = "http://localhost:5000/api/auth/github";
+            const apiBase =
+              import.meta.env.VITE_API_URL ||
+              "https://metrics-server-6zd9.onrender.com";
+            window.location.href = `${apiBase}/api/auth/github`;
           }}
           className="w-full py-2.5 px-4 rounded-xl text-sm font-semibold bg-white text-black hover:bg-gray-200">
           Continue with GitHub

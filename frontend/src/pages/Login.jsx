@@ -21,7 +21,10 @@ const Login = () => {
   };
 
   const githubLogin = () => {
-    window.location.href = "http://localhost:5000/api/auth/github";
+    const apiBase =
+      import.meta.env.VITE_API_URL ||
+      "https://metrics-server-6zd9.onrender.com";
+    window.location.href = `${apiBase}/api/auth/github`;
   };
 
   return (
@@ -134,4 +137,3 @@ const Login = () => {
 };
 
 export default Login;
-

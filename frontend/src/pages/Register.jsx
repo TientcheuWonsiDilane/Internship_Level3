@@ -24,7 +24,10 @@ const Register = () => {
   };
 
   const githubLogin = () => {
-    window.location.href = "http://localhost:5000/api/auth/github";
+    const apiBase =
+      import.meta.env.VITE_API_URL ||
+      "https://metrics-server-6zd9.onrender.com";
+    window.location.href = `${apiBase}/api/auth/github`;
   };
 
   return (
@@ -68,7 +71,7 @@ const Register = () => {
                   placeholder="John Doe"
                 />
               </div>
-            </div> 
+            </div>
 
             <div>
               <label className="block text-sm font-medium text-gray-300 mb-1.5">
@@ -154,4 +157,3 @@ const Register = () => {
 };
 
 export default Register;
-

@@ -45,7 +45,11 @@ export async function fetchRepositoryMeta(fullName, token) {
 export async function fetchBranches(fullName, token) {
   const client = getClient(token);
   const { owner, repo } = parseRepoFullName(fullName);
-  const { data } = await client.repos.listBranches({ owner, repo, per_page: 50 });
+  const { data } = await client.repos.listBranches({
+    owner,
+    repo,
+    per_page: 50,
+  });
   return data.map((b) => ({
     name: b.name,
     lastCommitSha: b.commit?.sha || "",
@@ -56,7 +60,11 @@ export async function fetchBranches(fullName, token) {
 export async function fetchCommits(fullName, token, perPage = 30) {
   const client = getClient(token);
   const { owner, repo } = parseRepoFullName(fullName);
-  const { data } = await client.repos.listCommits({ owner, repo, per_page: perPage });
+  const { data } = await client.repos.listCommits({
+    owner,
+    repo,
+    per_page: perPage,
+  });
   return data.map((c) => ({
     sha: c.sha,
     message: c.commit?.message || "",
@@ -67,10 +75,20 @@ export async function fetchCommits(fullName, token, perPage = 30) {
   }));
 }
 
-export async function fetchPullRequests(fullName, token, state = "open", perPage = 30) {
+export async function fetchPullRequests(
+  fullName,
+  token,
+  state = "open",
+  perPage = 30,
+) {
   const client = getClient(token);
   const { owner, repo } = parseRepoFullName(fullName);
-  const { data } = await client.pulls.list({ owner, repo, state, per_page: perPage });
+  const { data } = await client.pulls.list({
+    owner,
+    repo,
+    state,
+    per_page: perPage,
+  });
   return data.map((pr) => ({
     prId: pr.id,
     number: pr.number,
@@ -92,7 +110,9 @@ export async function registerWebhook(fullName, secret, token, events) {
   const client = getClient(token);
   const { owner, repo } = parseRepoFullName(fullName);
   const config = {
-    url: process.env.GITHUB_WEBHOOK_URL || "http://localhost:5500/api/webhooks/github",
+    url:
+      process.env.GITHUB_WEBHOOK_URL ||
+      "https://metrics-server-6zd9.onrender.com/api/webhooks/github",
     content_type: "json",
     secret,
     insecure_ssl: "0",

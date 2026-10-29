@@ -1,4 +1,5 @@
-const BASE = "https://metrics-server-6zd9.onrender.com";
+const BASE =
+  import.meta.env.VITE_API_URL || "https://metrics-server-6zd9.onrender.com";
 
 async function request(path, options = {}) {
   const url = `${BASE}${path}`;

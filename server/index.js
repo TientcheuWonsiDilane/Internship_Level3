@@ -17,14 +17,14 @@ import teamRoutes from "./routes/teamRoutes.js";
 import { initSocket } from "./socket/index.js";
 import { registerDomainHooks } from "./services/bootstrapHooks.js";
 import { startWebhookWorker } from "./services/webhookProcessor.js";
-import webhookRoutes from "./routes/webhookRoutes.js";          // /api/webhooks/github
+import webhookRoutes from "./routes/webhookRoutes.js"; // /api/webhooks/github
 import notificationRoutes from "./routes/notificationRoutes.js"; // /api/notifications
-import commentRoutes from "./routes/commentRoutes.js";           // /api/tasks/:id/comments
-import taskQueryRoutes from "./routes/taskQueryRoutes.js";       // /api/tasks?assignee=me
-import activityRoutes from "./routes/activityRoutes.js";         // /api/teams/:id/activity
-import githubSyncRoutes from "./routes/githubSyncRoutes.js";     // /api/github/repositories/:id/sync
+import commentRoutes from "./routes/commentRoutes.js"; // /api/tasks/:id/comments
+import taskQueryRoutes from "./routes/taskQueryRoutes.js"; // /api/tasks?assignee=me
+import activityRoutes from "./routes/activityRoutes.js"; // /api/teams/:id/activity
+import githubSyncRoutes from "./routes/githubSyncRoutes.js"; // /api/github/repositories/:id/sync
 import repositoryDataRoutes from "./routes/repositoryDataRoutes.js"; // /api/repositories/:id/(branches|settings)
-import projectDataRoutes from "./routes/projectDataRoutes.js";   // /api/projects/:id/(pull-requests|commits)
+import projectDataRoutes from "./routes/projectDataRoutes.js"; // /api/projects/:id/(pull-requests|commits)
 
 const app = express();
 
@@ -37,7 +37,12 @@ app.use(
     },
   }),
 );
-app.use(cors({ origin: process.env.CORS_ORIGIN || "http://localhost:5173", credentials: true }));
+app.use(
+  cors({
+    origin: process.env.CORS_ORIGIN || "https://metrics-xs4x.onrender.com",
+    credentials: true,
+  }),
+);
 app.use(cookieParser());
 
 const port = process.env.PORT || 5500;

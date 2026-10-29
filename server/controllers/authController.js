@@ -44,7 +44,7 @@ export const register = async (req, res) => {
       expiresIn: "24h",
     });
 
-      res.cookie("token", token, {
+    res.cookie("token", token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       maxAge: 24 * 60 * 60 * 1000,
@@ -88,11 +88,9 @@ export const login = async (req, res) => {
     }
 
     if (!user.password) {
-      return res
-        .status(400)
-        .json({
-          message: "This user registered via GitHub. Please use GitHub login.",
-        });
+      return res.status(400).json({
+        message: "This user registered via GitHub. Please use GitHub login.",
+      });
     }
 
     const isMatch = await bcrypt.compare(password, user.password);
@@ -101,7 +99,11 @@ export const login = async (req, res) => {
     }
 
     const [token, memberships] = await Promise.all([
-      Promise.resolve(jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: "24h" })),
+      Promise.resolve(
+        jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
+          expiresIn: "24h",
+        }),
+      ),
       Membership.find({ userId: user._id }).select("teamId role").lean(),
     ]);
 
@@ -203,12 +205,12 @@ export const githubCallback = async (req, res) => {
     const dest = memberships.length ? "/dashboard" : "/onboarding";
 
     return res.redirect(
-      `${process.env.FRONTEND_URL || "http://localhost:5173"}${dest}`,
+      `${process.env.FRONTEND_URL || "https://metrics-xs4x.onrender.com"}${dest}`,
     );
   } catch (error) {
     console.error("GitHub OAuth Error:", error);
     return res.redirect(
-      `${process.env.FRONTEND_URL || "http://localhost:5173"}/login?error=oauth_failed`,
+      `${process.env.FRONTEND_URL || "https://metrics-xs4x.onrender.com"}/login?error=oauth_failed`,
     );
   }
 };
@@ -237,14 +239,31 @@ export const forgotPassword = async (req, res) => {
   try {
     const user = await User.findOne({ email: email.toLowerCase() });
     if (!user) {
-      return res.status(200).json({ success: true, message: "If an account with that email exists, we have sent a password reset link." });
+      return res
+        .status(200)
+        .json({
+          success: true,
+          message:
+            "If an account with that email exists, we have sent a password reset link.",
+        });
     }
 
     if (!user.password && user.github_id) {
-      return res.status(400).json({ message: "This account uses GitHub for login. You cannot reset a password for it." });
+      return res
+        .status(400)
+        .json({
+          message:
+            "This account uses GitHub for login. You cannot reset a password for it.",
+        });
     }
 
-    return res.status(200).json({ success: true, message: "If an account with that email exists, we have sent a password reset link." });
+    return res
+      .status(200)
+      .json({
+        success: true,
+        message:
+          "If an account with that email exists, we have sent a password reset link.",
+      });
   } catch (error) {
     console.error("Forgot Password Error:", error);
     return res.status(500).json({ message: "Internal server error" });
