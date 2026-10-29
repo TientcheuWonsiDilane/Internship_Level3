@@ -1,8 +1,15 @@
-const BASE =
-  import.meta.env.VITE_API_URL || "https://metrics-server-6zd9.onrender.com";
+const normalizeApiBase = () => {
+  const configured =
+    import.meta.env.VITE_API_URL || "https://metrics-server-6zd9.onrender.com";
+  const base = configured.replace(/\/$/, "");
+  return base.endsWith("/api") ? base : `${base}/api`;
+};
+
+const BASE = normalizeApiBase();
 
 async function request(path, options = {}) {
-  const url = `${BASE}${path}`;
+  const safePath = path.startsWith("/") ? path : `/${path}`;
+  const url = `${BASE}${safePath}`;
   const res = await fetch(url, {
     credentials: "include",
     headers: { "Content-Type": "application/json" },

@@ -21,10 +21,14 @@ const Login = () => {
   };
 
   const githubLogin = () => {
-    const apiBase =
+    const configured =
       import.meta.env.VITE_API_URL ||
       "https://metrics-server-6zd9.onrender.com";
-    window.location.href = `${apiBase}/api/auth/github`;
+    const apiBase = configured.replace(/\/$/, "");
+    const githubUrl = apiBase.endsWith("/api")
+      ? `${apiBase}/auth/github`
+      : `${apiBase}/api/auth/github`;
+    window.location.href = githubUrl;
   };
 
   return (
