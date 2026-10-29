@@ -1,4 +1,4 @@
-const BASE = "http://localhost:5000/api";
+const BASE = "https://metrics-server-6zd9.onrender.com";
 
 async function request(path, options = {}) {
   const url = `${BASE}${path}`;
